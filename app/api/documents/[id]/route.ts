@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { canAccess, canManage, canWrite } from "@/lib/access"
 import { errorResponse } from "@/lib/api-response"
 import { updateDocumentSchema } from "@/lib/schemas"
+import { snapshotIfStale } from "@/lib/version-snapshot"
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -70,6 +71,10 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
   if (Object.keys(parsed.data).length === 0) {
     return errorResponse("Nothing to update", 400)
+  }
+
+  if (parsed.data.content !== undefined) {
+    await snapshotIfStale(id, doc.title, doc.content)
   }
 
   const updated = await prisma.document.update({

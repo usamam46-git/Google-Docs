@@ -30,3 +30,7 @@ export const shareDocumentSchema = z.object({
 })
 
 export const SUPPORTED_IMPORT_EXTENSIONS = ["txt", "md", "markdown", "docx"] as const
+
+export const createCommentSchema = z.object({
+  content: z.string().trim().min(1, "Comment can't be empty").max(2000, "Comment is too long"),
+})

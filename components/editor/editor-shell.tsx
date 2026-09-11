@@ -8,6 +8,9 @@ import type { JSONContent } from "@tiptap/react"
 import { Input } from "@/components/ui/input"
 import { TiptapEditor } from "@/components/editor/tiptap-editor"
 import { ShareDialog } from "@/components/documents/share-dialog"
+import { VersionHistoryDialog } from "@/components/editor/version-history-dialog"
+import { CommentsDialog } from "@/components/editor/comments-dialog"
+import { ExportButton } from "@/components/editor/export-button"
 import type { AccessLevel } from "@/lib/access"
 
 interface ShareRow {
@@ -32,6 +35,7 @@ export function EditorShell({
   initialContent,
   access,
   ownerName,
+  currentUserId,
   shares,
   shareableUsers,
 }: {
@@ -40,6 +44,7 @@ export function EditorShell({
   initialContent: JSONContent
   access: AccessLevel
   ownerName: string
+  currentUserId: string
   shares: ShareRow[]
   shareableUsers: ShareableUser[]
 }) {
@@ -98,7 +103,7 @@ export function EditorShell({
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b bg-background">
-        <div className="mx-auto flex w-full max-w-4xl items-center gap-3 p-4">
+        <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center gap-3 p-4">
           <Link
             href="/documents"
             className="shrink-0 text-muted-foreground hover:text-foreground"
@@ -110,7 +115,7 @@ export function EditorShell({
             value={title}
             onChange={(e) => handleTitleChange(e.target.value)}
             disabled={!canEdit}
-            className="h-9 flex-1 border-none px-2 text-lg font-medium shadow-none focus-visible:ring-1"
+            className="h-9 min-w-0 flex-1 border-none px-2 text-lg font-medium shadow-none focus-visible:ring-1"
             aria-label="Document title"
           />
           <SaveIndicator state={saveState} />
@@ -119,13 +124,22 @@ export function EditorShell({
               {access === "edit" ? "Can edit" : "View only"} · Shared by {ownerName}
             </span>
           )}
-          {access === "owner" && (
-            <ShareDialog
+          <div className="flex flex-wrap items-center gap-2">
+            <VersionHistoryDialog documentId={documentId} canRestore={canEdit} />
+            <CommentsDialog
               documentId={documentId}
-              initialShares={shares}
-              shareableUsers={shareableUsers}
+              currentUserId={currentUserId}
+              isOwner={access === "owner"}
             />
-          )}
+            <ExportButton documentId={documentId} />
+            {access === "owner" && (
+              <ShareDialog
+                documentId={documentId}
+                initialShares={shares}
+                shareableUsers={shareableUsers}
+              />
+            )}
+          </div>
         </div>
       </header>
       <main className="mx-auto w-full max-w-4xl flex-1 p-6">

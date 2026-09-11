@@ -15,6 +15,7 @@ model User {
 
   ownedDocuments Document[]      @relation("OwnedDocuments")
   shares         DocumentShare[]
+  comments       Comment[]
 
   @@map("users")
 }
@@ -28,10 +29,37 @@ model Document {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  shares DocumentShare[]
+  shares   DocumentShare[]
+  versions DocumentVersion[]
+  comments Comment[]
 
   @@index([ownerId])
   @@map("documents")
+}
+
+model DocumentVersion {
+  id         String   @id @default(cuid())
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  title      String
+  content    Json
+  createdAt  DateTime @default(now())
+
+  @@index([documentId, createdAt])
+  @@map("document_versions")
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  content    String
+  createdAt  DateTime @default(now())
+
+  @@index([documentId, createdAt])
+  @@map("comments")
 }
 
 enum Permission {

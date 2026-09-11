@@ -21,6 +21,14 @@ Tiptap, shadcn/ui, react-hook-form + zod.
   non-owners) and on every API route (`lib/access.ts`), not just the client.
 - **Auth** — mocked: pick one of three seeded accounts, no password. Session is an httpOnly
   signed cookie ([iron-session](https://github.com/vvo/iron-session)).
+- **Version history** — automatic checkpoints as you edit, with one-click restore (which
+  itself checkpoints the current state first, so a restore is always undoable).
+- **Comments** — a per-document discussion thread; anyone with access (including view-only)
+  can read and post.
+- **Markdown export** — download any document as a `.md` file.
+
+See `SUBMISSION.md` for the full feature walkthrough, architecture, API reference, and AI
+workflow note.
 
 ## Tech stack
 

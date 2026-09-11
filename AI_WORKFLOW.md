@@ -1,5 +1,9 @@
 # AI Workflow Note
 
+> **Note:** `SUBMISSION.md` contains an updated version of this note that also covers the
+> second work pass (version history, comments, Markdown export) and a dialog-caching bug found
+> while testing them. This file is kept as the original note from the first pass.
+
 ## Which AI tools were used
 
 The entire implementation was built with **Claude Code** (Sonnet 5) in a single agentic

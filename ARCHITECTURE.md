@@ -1,5 +1,9 @@
 # Architecture Notes
 
+> **Note:** the full, up-to-date submission document — including the three stretch features
+> (version history, comments, Markdown export) added after this note was first written — lives
+> in `SUBMISSION.md`. This file is kept as the original, focused architecture note.
+
 ## Scope and priorities
 
 The brief explicitly rewards depth over breadth. Given a 4–6 hour budget, I prioritized:
@@ -34,20 +38,27 @@ The brief explicitly rewards depth over breadth. Given a 4–6 hour budget, I pr
   do everything (edit, share, delete); a share is either `VIEW` or `EDIT`. This maps directly
   onto the assignment's requirement ("a visible distinction between owned and shared
   documents") without inventing permission tiers nobody asked for.
-- **No document version history** and no delete/undo trash. Delete is permanent (with a
-  confirmation dialog) rather than soft-deleted, to avoid building a whole recovery UX for a
-  feature that isn't in scope.
-- **No comments/suggestions mode.** Listed as an optional stretch in the brief; skipped in
-  favor of hardening the required features.
+- **No delete/undo trash.** Delete is permanent (with a confirmation dialog) rather than
+  soft-deleted, to avoid building a whole recovery UX for a feature that isn't in scope.
+- **PDF export and real-time collaboration presence** were the two stretch items *not* built
+  (out of the five listed) — each needs genuinely new infrastructure (a PDF rendering pipeline;
+  a presence/websocket channel) that was a worse time/risk trade-off than the three stretch
+  items that were built: **version history with restore**, **document-scoped comments**, and
+  **Markdown export** — see `SUBMISSION.md` for the full writeup of all three.
 
 ## Data model
 
 ```
-User            id, email, name
-Document        id, title, content (Tiptap JSON), ownerId → User
-DocumentShare   id, documentId → Document, userId → User, permission (VIEW | EDIT)
-                unique on (documentId, userId) — one share row per person per document
+User             id, email, name
+Document         id, title, content (Tiptap JSON), ownerId → User
+DocumentShare    id, documentId → Document, userId → User, permission (VIEW | EDIT)
+                 unique on (documentId, userId) — one share row per person per document
+DocumentVersion  id, documentId → Document, title, content (Tiptap JSON snapshot), createdAt
+Comment          id, documentId → Document, authorId → User, content, createdAt
 ```
+
+(`DocumentVersion` and `Comment` back the two stretch features added later — full details in
+`SUBMISSION.md`.)
 
 `content` is stored as Tiptap's document JSON (not HTML) so it round-trips through the editor
 without a lossy HTML conversion step. HTML only appears transiently during file import

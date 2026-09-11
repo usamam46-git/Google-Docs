@@ -39,6 +39,7 @@ export default async function DocumentPage({
       initialContent={doc.content as JSONContent}
       access={access}
       ownerName={doc.owner.name}
+      currentUserId={user.id}
       shares={doc.shares.map((s) => ({
         id: s.id,
         userId: s.userId,
